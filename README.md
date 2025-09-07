@@ -35,7 +35,7 @@ TravelNest/
 
 Clone the repository:
 
-git clone https://github.com/yourusername/travelnest.git
+git clone https://github.com/krishna-gaikwad97/travelnest.git
 cd travelnest
 
 
