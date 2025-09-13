@@ -3,17 +3,20 @@
     <div class="row">    
       <div class="col-8 offset-2">
         <h3 class="newheading">Create a New Listing</h3>
-    <form method="POST" action="/listings">
+    <form method="POST" action="/listings" novalidate class="needs-validation">
       <div>
         <label for="title" class="form-label">Title</label>
-      <input name="listing[title]" placeholder="enter title" type="text" class="form-control"/>
+      <input name="listing[title]" placeholder="enter title" type="text" class="form-control" required/>
+      <div class="valid-feedback">Title looks good!</div>
       </div>
       <div>
         <label for="description" class="form-label">Description</label>
         <textarea
         name="listing[description]"
         class="form-control"
+        required
       ></textarea>
+      <div class="invalid-feedback">Please enter valid description</div>
 
       </div>
       
@@ -29,12 +32,14 @@
      <div class="row">
       <div class="col-4">
         <label for="price" class="form-label">Price</label>
-        <input name="listing[price]" placeholder="enter price" type="number" class="form-control" />
+        <input name="listing[price]" placeholder="enter price" type="number" class="form-control" required/>
+        <div class="invalid-feedback">Please enter valid Price</div>
       </div>
       
       <div class="mb-3 col-8">
         <label for="country" class="form-label">Country</label>
-        <input name="listing[country]" placeholder="enter country" type="text" class="form-control" />
+        <input name="listing[country]" placeholder="enter country" type="text" class="form-control" required />
+        <div class="invalid-feedback">Please enter valid Country</div>
       </div>
      </div>
       
@@ -46,11 +51,13 @@
         placeholder="enter location"
         type="text"
         class="form-control"
+        required
       />
+      <div class="invalid-feedback">Please enter valid Location</div>
       </div>
       
       <br /><br />
-      <button type="button" class="btn btn-outline-success">Add</button>
+      <button type="submit" class="btn btn-outline-success">Add</button>
     </form>
       </div>
       </div>

@@ -32,13 +32,20 @@
       <div class="col-8 text-center">
         <h3 class="mb-4">Listing Details</h3>
         
-        <div class="card mb-4">
-          <img src="<%= listing.image %>" class="card-img-top img-fluid" alt="Listing image" style="max-height: 300px; object-fit: cover;">
+         <div class="card mb-4 ">
+          <img src="<%= listing.image %>" class="card-img-top img-fluid" alt="Listing image" style="max-height: 300px; object-fit: cover;"> 
           <div class="card-body">
+            
+
             <h5 class="card-title"><%= listing.title %></h5>
             <ul class="list-group list-group-flush text-start mt-3">
               <li class="list-group-item"><strong>Description:</strong> <%= listing.description %></li>
-              <li class="list-group-item"><strong>Price:</strong> &#8377; <%= listing.price.toLocaleString("en-IN") %></li>
+              
+        <li class="list-group-item"><strong>Price:</strong> 
+  
+  &#8377; <%= listing.price ? Number(listing.price).toLocaleString("en-IN") : "N/A" %>
+</li>
+
               <li class="list-group-item"><strong>Location:</strong> <%= listing.location %></li>
               <li class="list-group-item"><strong>Country:</strong> <%= listing.country %></li>
             </ul>
@@ -46,10 +53,10 @@
         </div>
 
         <div class="d-flex justify-content-center gap-3">
-          <a href="/listings/<%= listing._id %>/edit" class="btn btn-outline-success">Edit this Listing</a>
+          <a href="/listings/<%= listing._id %>/edit" class="btn btn-danger" >Edit</a>
           
           <form method="POST" action="/listings/<%= listing._id %>?_method=DELETE" style="display: inline;">
-            <button type="submit" class="btn btn-outline-danger">Delete this Listing</button>
+            <button type="submit" class="btn btn-dark ">Delete</button>
           </form>
         </div>
       </div>
