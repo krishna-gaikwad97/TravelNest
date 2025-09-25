@@ -6,6 +6,9 @@ const path = require("path");
 const methodOverride = require("method-override");
 const engine=require("ejs-mate");
 app.use(express.static(path.join(__dirname, "public")));
+const wrapAsync=require("./utils/wrapAsync.js");
+const ExpressError=require("./utils/ExpressError.js");
+const Review = require("./models/review.js");
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 
@@ -44,23 +47,22 @@ app.get("/listings/new", (req, res) => {
 //Show Route
 app.get("/listings/:id", async (req, res) => {
   let { id } = req.params;
-  const listing = await Listing.findById(id);
+  const listing = await Listing.findById(id).populate("reviews");
   res.render("listings/show.ejs", { listing });
 });
 
 //Create Route
-app.post("/listings", async (req, res,next) => {
-  try{
+app.post("/listings",wrapAsync( async (req, res,next) => {
+  if(!req.body.listing){
+    throw new ExpressError(400,"send valid data for listing");
+  }
     const newListing = new Listing(req.body.listing);
   await newListing.save();
   res.redirect("/listings");
 
-  }catch(err){
-    next(err);
-
-  }
+ 
   
-});
+}));
 
 //Edit Route
 app.get("/listings/:id/edit", async (req, res) => {
@@ -71,6 +73,9 @@ app.get("/listings/:id/edit", async (req, res) => {
 
 //Update Route
 app.put("/listings/:id", async (req, res) => {
+  if(!req.body.listing){
+    throw new ExpressError(400,"send valid data for listing");
+  }
   let { id } = req.params;
   await Listing.findByIdAndUpdate(id, { ...req.body.listing });
   res.redirect(`/listings/${id}`);
@@ -83,6 +88,42 @@ app.delete("/listings/:id", async (req, res) => {
   console.log(deletedListing);
   res.redirect("/listings");
 });
+//reviews
+app.post("/listings/:id/reviews", async (req, res) => {
+  let listing=await Listing.findById(req.params.id);
+  let newReview=new Review(req.body.Review);
+  listing.reviews.push(newReview);
+  await newReview.save();
+  await listing.save();
+  console.log("new review added");
+  res.redirect(`/listings/${listing._id}`);
+
+});
+
+//delete review
+// app.delete("/listings/:id/reviews/:reviewId", wrapAsync( async (req, res) => {
+//   let { id, reviewId } = req.params;
+//   const reviewIdTrimmed = reviewId.trim();
+//   await Listing.findByIdAndUpdate(id, { $pull: { reviews: reviewId } });
+//   await Review.findByIdAndDelete(reviewIdTrimmed);
+//   res.redirect(`/listings/${id}`);
+// }));
+
+
+app.delete("/listings/:id/reviews/:reviewId", wrapAsync(async (req, res) => {
+  const { id, reviewId } = req.params;
+
+  // Remove any extra whitespace
+  const reviewIdTrimmed = reviewId.trim();
+
+  await Listing.findByIdAndUpdate(
+    id,
+    { $pull: { reviews: mongoose.Types.ObjectId(reviewIdTrimmed) } }
+  );
+  await Review.findByIdAndDelete(reviewIdTrimmed);
+
+  res.redirect(`/listings/${id}`);
+}));
 
 // app.get("/testListing", async (req, res) => {
 //   let sampleListing = new Listing({
@@ -97,9 +138,11 @@ app.delete("/listings/:id", async (req, res) => {
 //   console.log("sample was saved");
 //   res.send("successful testing");
 // });
-app.use((err,req,res,next)=>{
-  res.send("something went Wrong on website");
+app.use((err, req, res, next) => {
+  const { status = 500, message = "Something went wrong" } = err;
+  res.status(status).send(message);
 });
+
 
 app.listen(8080, () => {
   console.log("server is listening to port 8080");
