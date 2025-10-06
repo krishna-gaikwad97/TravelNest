@@ -10,6 +10,9 @@ const wrapAsync=require("./utils/wrapAsync.js");
 const ExpressError=require("./utils/ExpressError.js");
 const session =require("express-session");
 const flash=require("connect-flash");
+const passport=require("passport");
+const LocalStratergy=require("passport-local");
+const user=require("./models/user.js");
 
 const sessionOption={
   secret:"mysupersecret",
@@ -24,14 +27,23 @@ const sessionOption={
 app.use(session(sessionOption));
 app.use(flash());
 
+app.use(passport.initialize());
+app.use(passport.session());
+passport.use(new LocalStratergy(user.authenticate()));
+passport.serializeUser(user.serializeUser());
+passport.deserializeUser(user.deserializeUser());
+
 app.use((req,res,next)=>{
   res.locals.success=req.flash("success");
-  console.log(res.locals.success);
+  res.locals.error=req.flash("error");
+  //console.log(res.locals.success);
   next();
-})
+});
 
-const listings=require("./routes/listing.js");
-const reviews=require("./routes/review.js");
+const listingrouter=require("./routes/listing.js");
+const reviewrouter=require("./routes/review.js");
+const userrouter=require("./routes/user.js");
+const router = require("./routes/listing.js");
 
 const MONGO_URL = "mongodb://127.0.0.1:27017/wanderlust";
 
@@ -55,8 +67,18 @@ app.use(methodOverride("_method"));
 app.get("/", (req, res) => {
   res.send("Hi, I am root");
 });
-app.use("/listings",listings);
-app.use("/listings/:id/reviews",reviews);
+// app.get("/demouser",async(req,res)=>{
+//   let fakeuser=new user({
+//     email:"Student@gmail.com",
+//     username:"delta-student"
+//   });
+//   let registeruser=await user.register(fakeuser,"helloworld");
+//   res.send(registeruser);
+
+// })
+app.use("/listings",listingrouter);
+app.use("/listings/:id/reviews",reviewrouter);
+app.use("/",userrouter);
 
 
 app.use((err, req, res, next) => {

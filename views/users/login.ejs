@@ -1,0 +1,25 @@
+ <% layout("/layouts/boilerplate.ejs") %>
+ <div class="row mb-3">    
+    <h1 class="col-6 offset-3">Login on Travelnest</h1>
+      <div class="col-6 offset-3">
+        <form action="/login" method="post" class="needs-validation" novalidate>
+            <div>
+        <label for="username" class="form-label">Username</label>
+      <input name="username" placeholder="enter username" type="text" class="form-control" id="username" required/>
+      <div class="valid-feedback"> looks good!</div>
+      </div>
+      
+      <div class="row mb-3">    
+     
+        <div>
+        <label for="password" class="form-label">password</label>
+      <input name="password" placeholder="enter password" type="password" class="form-control" id="email" required/>
+      <div class="valid-feedback"> please enter password</div>
+      </div>
+      </div>
+</div>
+
+        <button class="btn btn-success" type="submit">Log in</button>
+        </form>
+    </div>
+ </div>

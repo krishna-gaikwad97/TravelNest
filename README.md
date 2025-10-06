@@ -30,6 +30,7 @@ TravelNest/
 │-- public/        # Static files (CSS, JS, images)
 │-- app.js         # Main server file
 │-- package.json   # Dependencies
+|-- utils          # Error Handling  
 
 🚀 Installation & Setup
 
